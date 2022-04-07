@@ -85,6 +85,7 @@ def xsstest(url):
             response = mechanize.urlopen(req)
             if response.geturl() != submitUrl:
                 return True
+    return False
 """
     response = requests.get(url, verify=False)
     soup = BeautifulSoup(response.text, 'html.parser')
