@@ -5,12 +5,15 @@ app = Flask(__name__)
 
 
 @app.route("/")
-def hello_world():
+def home():
+    """ Renders home page via the home template """
     return render_template("home.tpl")
 
 
 @app.route("/results", methods=["POST"])
 def results():
+    """ Takes in parameters from form on home page and runs appropriate
+        test via testrunner.py"""
     address = request.form.get("address")
     print(request.form)
     XSS = request.form.get("XSSbutton", False)
@@ -25,4 +28,4 @@ def results():
     return render_template("results.tpl", XSS=XSS, SQL=SQL, url=address,
                            XSSResult=XSSResult, SQLResult=SQLResult)
 
-app.run("localhost", debug=True)
+# app.run("localhost", debug=True)

